@@ -1,9 +1,6 @@
 import type {
   AndroidModuleProps,
-  IosModuleProps,
 } from '../modules';
-
-import type * as Apple from './apple';
 
 export type Sku = string;
 
@@ -45,7 +42,6 @@ export enum ProductType {
 
 export interface ProductCommon {
   type: 'subs' | 'sub' | 'inapp' | 'iap';
-  productId: string; //iOS
   productIds?: string[];
   title: string;
   description: string;
@@ -61,10 +57,6 @@ export interface ProductPurchase {
   transactionDate: number;
   transactionReceipt: string;
   purchaseToken?: string;
-  //iOS
-  quantityIOS?: number;
-  originalTransactionDateIOS?: string;
-  originalTransactionIdentifierIOS?: string;
   //Android
   productIds?: string[];
   dataAndroid?: string;
@@ -88,8 +80,6 @@ export interface PurchaseResult {
 
 export interface SubscriptionPurchase extends ProductPurchase {
   autoRenewingAndroid?: boolean;
-  originalTransactionDateIOS?: string;
-  originalTransactionIdentifierIOS?: string;
 }
 
 export type Purchase = ProductPurchase | SubscriptionPurchase;
@@ -112,11 +102,8 @@ export interface ProductAndroid extends ProductCommon {
     priceAmountMicros: string;
   };
 }
-export interface ProductIOS extends ProductCommon {
-  type: 'inapp' | 'iap';
-}
 
-export type Product = ProductAndroid & ProductIOS;
+export type Product = ProductAndroid;
 
 // Android V5
 export interface SubscriptionAndroid extends ProductCommon {
@@ -143,29 +130,8 @@ export interface SubscriptionAndroid extends ProductCommon {
   }[];
 }
 
-export interface SubscriptionIOS extends ProductCommon {
-  type: 'subs';
-  discounts?: Discount[];
-  introductoryPrice?: string;
-  introductoryPriceAsAmountIOS?: string;
-  introductoryPricePaymentModeIOS?:
-    | ''
-    | 'FREETRIAL'
-    | 'PAYASYOUGO'
-    | 'PAYUPFRONT';
-  introductoryPriceNumberOfPeriodsIOS?: string;
-  introductoryPriceSubscriptionPeriodIOS?:
-    | 'DAY'
-    | 'WEEK'
-    | 'MONTH'
-    | 'YEAR'
-    | '';
 
-  subscriptionPeriodNumberIOS?: string;
-  subscriptionPeriodUnitIOS?: '' | 'YEAR' | 'MONTH' | 'WEEK' | 'DAY';
-}
-
-export type Subscription = SubscriptionAndroid & SubscriptionIOS;
+export type Subscription = SubscriptionAndroid;
 export interface RequestPurchaseBaseAndroid {
   obfuscatedAccountIdAndroid?: string;
   obfuscatedProfileIdAndroid?: string;
@@ -176,18 +142,7 @@ export interface RequestPurchaseAndroid extends RequestPurchaseBaseAndroid {
   skus?: Sku[];
 }
 
-export interface RequestPurchaseIOS {
-  sku?: Sku;
-  andDangerouslyFinishTransactionAutomaticallyIOS?: boolean;
-  /**
-   * UUID representing user account
-   */
-  applicationUsername?: string;
-  quantity?: number;
-  withOffer?: Apple.PaymentDiscount;
-}
-
-export type RequestPurchase = RequestPurchaseAndroid & RequestPurchaseIOS;
+export type RequestPurchase = RequestPurchaseAndroid;
 
 /**
  * In order to purchase a new subscription, every sku must have a selected offerToken
@@ -204,14 +159,10 @@ export interface RequestSubscriptionAndroid extends RequestPurchaseBaseAndroid {
   subscriptionOffers?: SubscriptionOffer[]; // For AndroidBilling V5
 }
 
-export type RequestSubscriptionIOS = RequestPurchaseIOS;
-
-export type RequestSubscription = RequestSubscriptionAndroid &
-  RequestSubscriptionIOS;
+export type RequestSubscription = RequestSubscriptionAndroid;
 
 declare module 'react-native' {
   interface NativeModulesStatic {
-    RNIapIos: IosModuleProps;
     RNIapModule: AndroidModuleProps;
   }
 }

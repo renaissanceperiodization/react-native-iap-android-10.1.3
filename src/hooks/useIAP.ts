@@ -17,7 +17,6 @@ import {useIAPContext} from './withIAPContext';
 type IAP_STATUS = {
   connected: boolean;
   products: Product[];
-  promotedProductsIOS: Product[];
   subscriptions: Subscription[];
   purchaseHistory: Purchase[];
   availablePurchases: Purchase[];
@@ -45,7 +44,6 @@ export const useIAP = (): IAP_STATUS => {
   const {
     connected,
     products,
-    promotedProductsIOS,
     subscriptions,
     purchaseHistory,
     availablePurchases,
@@ -121,7 +119,6 @@ export const useIAP = (): IAP_STATUS => {
   return {
     connected,
     products,
-    promotedProductsIOS,
     subscriptions,
     purchaseHistory,
     availablePurchases,
