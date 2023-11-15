@@ -28,11 +28,10 @@ You can then either build for iOS:
 yarn ios
 ```
 
-or for Android with 2 variants: `play` or `amazon`.
+or for Android with 1 variant: `play`.
 
 ```sh
 yarn android:play
-yarn android:amazon
 ```
 
 To be able to get products/subscriptions from the App Store or Play Store you will need to follow a few steps:

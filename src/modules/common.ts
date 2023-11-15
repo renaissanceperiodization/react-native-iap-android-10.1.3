@@ -1,5 +1,5 @@
 /**
- * Common interface for all native modules (iOS — AppStore, Android — PlayStore and Amazon).
+ * Common interface for all native modules (iOS — AppStore, Android — PlayStore).
  */
 export interface NativeModuleProps {
   /** Required method to start a payment provider connection */

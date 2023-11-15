@@ -1,5 +1,4 @@
 import type {
-  AmazonModuleProps,
   AndroidModuleProps,
   IosModuleProps,
 } from '../modules';
@@ -28,7 +27,6 @@ export const PROMOTED_PRODUCT = 'iap-promoted-product';
 export enum InstallSourceAndroid {
   NOT_SET = 0,
   GOOGLE_PLAY = 1,
-  AMAZON = 2,
 }
 
 export enum ProductType {
@@ -78,11 +76,6 @@ export interface ProductPurchase {
   developerPayloadAndroid?: string;
   obfuscatedAccountIdAndroid?: string;
   obfuscatedProfileIdAndroid?: string;
-  //Amazon
-  userIdAmazon?: string;
-  userMarketplaceAmazon?: string;
-  userJsonAmazon?: string;
-  isCanceledAmazon?: boolean;
 }
 
 export interface PurchaseResult {
@@ -220,6 +213,5 @@ declare module 'react-native' {
   interface NativeModulesStatic {
     RNIapIos: IosModuleProps;
     RNIapModule: AndroidModuleProps;
-    RNIapAmazonModule: AmazonModuleProps;
   }
 }

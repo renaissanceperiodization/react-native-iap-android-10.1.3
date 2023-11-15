@@ -1,14 +1,12 @@
 import {Linking, NativeModules, Platform} from 'react-native';
 import type {ResponseBody as ReceiptValidationResponse} from '@jeremybarbet/apple-api-types';
 
-import type * as Amazon from './types/amazon';
 import type * as Android from './types/android';
 import type * as Apple from './types/apple';
 import {offerToRecord} from './types/apple';
 import {
   enhancedFetch,
   fillProductsWithAdditionalData,
-  isAmazon,
   isAndroid,
 } from './internal';
 import {
@@ -25,14 +23,12 @@ import {
 } from './types';
 import {InstallSourceAndroid, PurchaseStateAndroid} from './types';
 
-const {RNIapIos, RNIapModule, RNIapAmazonModule} = NativeModules;
+const {RNIapIos, RNIapModule} = NativeModules;
 const ANDROID_ITEM_TYPE_SUBSCRIPTION = ProductType.subs;
 const ANDROID_ITEM_TYPE_IAP = ProductType.inapp;
 
 export const getInstallSourceAndroid = (): InstallSourceAndroid => {
-  return RNIapModule
-    ? InstallSourceAndroid.GOOGLE_PLAY
-    : InstallSourceAndroid.AMAZON;
+  return InstallSourceAndroid.GOOGLE_PLAY;
 };
 
 let androidNativeModule = RNIapModule;
@@ -44,21 +40,19 @@ export const setAndroidNativeModule = (
 };
 
 const checkNativeAndroidAvailable = (): void => {
-  if (!RNIapModule && !RNIapAmazonModule) {
+  if (!RNIapModule) {
     throw new Error('IAP_NOT_AVAILABLE');
   }
 };
 
 export const getAndroidModule = ():
-  | typeof RNIapModule
-  | typeof RNIapAmazonModule => {
+  | typeof RNIapModule => {
   checkNativeAndroidAvailable();
 
   return androidNativeModule
     ? androidNativeModule
     : RNIapModule
-    ? RNIapModule
-    : RNIapAmazonModule;
+    ;
 };
 
 const checkNativeIOSAvailable = (): void => {
@@ -75,7 +69,6 @@ export const getIosModule = (): typeof RNIapIos => {
 
 export const getNativeModule = ():
   | typeof RNIapModule
-  | typeof RNIapAmazonModule
   | typeof RNIapIos => {
   return isAndroid ? getAndroidModule() : getIosModule();
 };
@@ -281,10 +274,6 @@ export const getPurchaseHistory = (): Promise<
         return getIosModule().getAvailableItems();
       },
       android: async () => {
-        if (RNIapAmazonModule) {
-          return await RNIapAmazonModule.getAvailableItems();
-        }
-
         const products = await RNIapModule.getPurchaseHistoryByType(
           ANDROID_ITEM_TYPE_IAP,
         );
@@ -385,10 +374,6 @@ export const getAvailablePurchases = (): Promise<
         return getIosModule().getAvailableItems();
       },
       android: async () => {
-        if (RNIapAmazonModule) {
-          return await RNIapAmazonModule.getAvailableItems();
-        }
-
         const products = await RNIapModule.getAvailableItemsByType(
           ANDROID_ITEM_TYPE_IAP,
         );
@@ -498,14 +483,6 @@ export const requestPurchase = ({
         );
       },
       android: async () => {
-        if (isAmazon) {
-          if (!sku) {
-            return Promise.reject(
-              new Error('sku is required for Amazon purchase'),
-            );
-          }
-          return RNIapAmazonModule.buyItemByType(sku);
-        } else {
           if (!sku?.length && !sku) {
             return Promise.reject(
               new Error('skus is required for Android purchase'),
@@ -521,7 +498,6 @@ export const requestPurchase = ({
             [],
             isOfferPersonalized ?? false,
           );
-        }
       },
     }) || Promise.resolve
   )();
@@ -635,14 +611,6 @@ export const requestSubscription = ({
         );
       },
       android: async () => {
-        if (isAmazon) {
-          if (!sku) {
-            return Promise.reject(
-              new Error('sku is required for Amazon purchase'),
-            );
-          }
-          return RNIapAmazonModule.buyItemByType(sku);
-        } else {
           if (!subscriptionOffers?.length) {
             return Promise.reject(
               'subscriptionOffers are required for Google Play Subscriptions',
@@ -657,9 +625,7 @@ export const requestSubscription = ({
             obfuscatedProfileIdAndroid,
             subscriptionOffers?.map((so) => so.offerToken),
             isOfferPersonalized ?? false,
-          );
-        }
-      },
+          );      },
     }) || (() => Promise.resolve(null))
   )();
 
@@ -730,9 +696,8 @@ export const finishTransaction = ({
               developerPayloadAndroid,
             );
           } else if (
-            purchase.userIdAmazon ||
-            (!purchase.isAcknowledgedAndroid &&
-              purchase.purchaseStateAndroid === PurchaseStateAndroid.PURCHASED)
+            !purchase.isAcknowledgedAndroid &&
+              purchase.purchaseStateAndroid === PurchaseStateAndroid.PURCHASED
           ) {
             return getAndroidModule().acknowledgePurchase(
               purchase.purchaseToken,
@@ -932,33 +897,6 @@ export const validateReceiptAndroid = async ({
     `/tokens/${productToken}?access_token=${accessToken}`;
 
   return await enhancedFetch<Android.ReceiptType>(url);
-};
-
-/**
- * Validate receipt for Amazon. NOTE: This method is here for debugging purposes only. Including
- * your developer secret in the binary you ship to users is potentially dangerous.
- * Use server side validation instead for your production builds
- * @param {string} developerSecret: from the Amazon developer console.
- * @param {string} userId who purchased the item.
- * @param {string} receiptId long obfuscated string returned when purchasing the item
- * @param {boolean} useSandbox Defaults to true, use sandbox environment or production.
- * @returns {Promise<object>}
- */
-export const validateReceiptAmazon = async ({
-  developerSecret,
-  userId,
-  receiptId,
-  useSandbox = true,
-}: {
-  developerSecret: string;
-  userId: string;
-  receiptId: string;
-  useSandbox: boolean;
-}): Promise<Amazon.ReceiptType> => {
-  const sandBoxUrl = useSandbox ? 'sandbox/' : '';
-  const url = `https://appstore-sdk.amazon.com/${sandBoxUrl}version/1.0/verifyReceiptId/developer/${developerSecret}/user/${userId}/receiptId/${receiptId}`;
-
-  return await enhancedFetch<Amazon.ReceiptType>(url);
 };
 
 /**

@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Getting started
 
-`react-native-iap` will help you access the In-App purchases capabilities of your device on `iOS`, and `Android` (Play Store and Amazon).
+`react-native-iap` will help you access the In-App purchases capabilities of your device on `iOS`, and `Android` (Play Store).
 
 :::note
 This library will provide the basic features to consume In-App purchases on the client-side, however you'll have to implement the server-side to validate your receipts (which is probably the most time consuming part to do it correctly).
@@ -69,7 +69,7 @@ dependencies {
 
 #### Configure the payment provider
 
-You can support either `Play Store`, `Amazon` or both.
+You can support `Play Store`.
 
 - To only support `Play Store`, go to `android/app/build.gradle`:
 
@@ -91,11 +91,6 @@ android {
 +   googlePlay {
 +     dimension "appstore"
 +     missingDimensionStrategy "store", "play"
-+   }
-+
-+   amazon {
-+     dimension "appstore"
-+     missingDimensionStrategy "store", "amazon"
 +   }
 + }
 }

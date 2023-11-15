@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "android:play": "react-native run-android --variant=GooglePlayDebug",
-    "android:amazon": "react-native run-android --variant=AmazonDebug",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "pods": "pod-install --quiet",

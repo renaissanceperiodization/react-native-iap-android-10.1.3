@@ -7,9 +7,3 @@ NativeModules.RNIapModule = {
   getInstallSource: jest.fn(),
 };
 
-NativeModules.RNIapAmazonModule = {
-  ...NativeModules.RNIapAmazonModule,
-  initConnection: jest.fn(() => Promise.resolve(true)),
-  endConnection: jest.fn(),
-  getInstallSource: jest.fn(),
-};

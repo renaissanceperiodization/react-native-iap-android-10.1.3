@@ -31,7 +31,6 @@
     "Billing",
     "iOS",
     "Android",
-    "Amazon",
     "Play"
   ],
   "main": "lib/commonjs/index",
