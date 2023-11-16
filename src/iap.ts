@@ -1,16 +1,11 @@
-import {Linking, NativeModules, Platform} from 'react-native';
+import {Linking, NativeModules} from 'react-native';
 
 import type * as Android from './types/android';
-import {
-  enhancedFetch,
-  fillProductsWithAdditionalData,
-  isAndroid,
-} from './internal';
+import {enhancedFetch, fillProductsWithAdditionalData} from './internal';
 import {
   Product,
   ProductPurchase,
   ProductType,
-  Purchase,
   PurchaseResult,
   RequestPurchase,
   RequestSubscription,
@@ -42,17 +37,13 @@ const checkNativeAndroidAvailable = (): void => {
   }
 };
 
-export const getAndroidModule = ():
-  typeof RNIapAndroidModule => {
+export const getAndroidModule = (): typeof RNIapAndroidModule => {
   checkNativeAndroidAvailable();
 
-  return androidNativeModule
-    ? androidNativeModule
-    : RNIapAndroidModule;
+  return androidNativeModule ? androidNativeModule : RNIapAndroidModule;
 };
 
-export const getNativeModule = ():
-  typeof RNIapAndroidModule => {
+export const getNativeModule = (): typeof RNIapAndroidModule => {
   return getAndroidModule();
 };
 
@@ -161,7 +152,7 @@ export const getProducts = async ({
     ANDROID_ITEM_TYPE_IAP,
     skus,
   );
-  
+
   return fillProductsWithAdditionalData(products);
 };
 
@@ -197,7 +188,6 @@ export const getSubscriptions = async ({
   )) as Subscription[];
 
   return fillProductsWithAdditionalData(subscriptions);
-
 };
 
 /**
@@ -223,26 +213,19 @@ const App = () => {
 };
 ```
  */
-export const getPurchaseHistory = (): Promise<
+export const getPurchaseHistory = async (): Promise<
   (ProductPurchase | SubscriptionPurchase)[]
-> =>
-  (
-    Platform.select({
-      ios: async () => {
-      },
-      android: async () => {
-        const products = await RNIapAndroidModule.getPurchaseHistoryByType(
-          ANDROID_ITEM_TYPE_IAP,
-        );
+> => {
+  const products = await RNIapAndroidModule.getPurchaseHistoryByType(
+    ANDROID_ITEM_TYPE_IAP,
+  );
 
-        const subscriptions = await RNIapAndroidModule.getPurchaseHistoryByType(
-          ANDROID_ITEM_TYPE_SUBSCRIPTION,
-        );
+  const subscriptions = await RNIapAndroidModule.getPurchaseHistoryByType(
+    ANDROID_ITEM_TYPE_SUBSCRIPTION,
+  );
 
-        return products.concat(subscriptions);
-      },
-    }) || (() => Promise.resolve([]))
-  )();
+  return products.concat(subscriptions);
+};
 
 /**
  * Get all purchases made by the user (either non-consumable, or haven't been consumed yet)
@@ -322,26 +305,19 @@ const App = () => {
 ```
  * 
  */
-export const getAvailablePurchases = (): Promise<
+export const getAvailablePurchases = async (): Promise<
   (ProductPurchase | SubscriptionPurchase)[]
-> =>
-  (
-    Platform.select({
-      ios: async () => {
-      },
-      android: async () => {
-        const products = await RNIapAndroidModule.getAvailableItemsByType(
-          ANDROID_ITEM_TYPE_IAP,
-        );
+> => {
+  const products = await RNIapAndroidModule.getAvailableItemsByType(
+    ANDROID_ITEM_TYPE_IAP,
+  );
 
-        const subscriptions = await RNIapAndroidModule.getAvailableItemsByType(
-          ANDROID_ITEM_TYPE_SUBSCRIPTION,
-        );
+  const subscriptions = await RNIapAndroidModule.getAvailableItemsByType(
+    ANDROID_ITEM_TYPE_SUBSCRIPTION,
+  );
 
-        return products.concat(subscriptions);
-      },
-    }) || (() => Promise.resolve([]))
-  )();
+  return products.concat(subscriptions);
+};
 
 /**
  * Request a purchase for product. This will be received in `PurchaseUpdatedListener`.
@@ -412,37 +388,25 @@ const App = () => {
  */
 
 export const requestPurchase = ({
-  sku,
-  andDangerouslyFinishTransactionAutomaticallyIOS = false,
-  applicationUsername,
   obfuscatedAccountIdAndroid,
   obfuscatedProfileIdAndroid,
   skus,
   isOfferPersonalized,
-}: RequestPurchase): Promise<ProductPurchase | void> =>
-  (
-    Platform.select({
-      ios: async () => {
-      },
-      android: async () => {
-          if (!sku?.length && !sku) {
-            return Promise.reject(
-              new Error('skus is required for Android purchase'),
-            );
-          }
-          return getAndroidModule().buyItemByType(
-            ANDROID_ITEM_TYPE_IAP,
-            skus?.length ? skus : [sku],
-            undefined,
-            -1,
-            obfuscatedAccountIdAndroid,
-            obfuscatedProfileIdAndroid,
-            [],
-            isOfferPersonalized ?? false,
-          );
-      },
-    }) || Promise.resolve
-  )();
+}: RequestPurchase): Promise<ProductPurchase | void> => {
+  if (!skus?.length && !skus) {
+    return Promise.reject(new Error('skus is required for Android purchase'));
+  }
+  return getAndroidModule().buyItemByType(
+    ANDROID_ITEM_TYPE_IAP,
+    skus?.length ? skus : [],
+    undefined,
+    -1,
+    obfuscatedAccountIdAndroid,
+    obfuscatedProfileIdAndroid,
+    [],
+    isOfferPersonalized ?? false,
+  );
+};
 
 /**
  * Request a purchase for product. This will be received in `PurchaseUpdatedListener`.
@@ -522,38 +486,29 @@ const App = () => {
 ```
  */
 export const requestSubscription = ({
-  sku,
-  andDangerouslyFinishTransactionAutomaticallyIOS = false,
-  applicationUsername,
   purchaseTokenAndroid,
   prorationModeAndroid = -1,
   subscriptionOffers,
   obfuscatedAccountIdAndroid,
   obfuscatedProfileIdAndroid,
   isOfferPersonalized = undefined,
-}: RequestSubscription): Promise<SubscriptionPurchase | null | void> =>
-  (
-    Platform.select({
-      ios: async () => {
-      },
-      android: async () => {
-          if (!subscriptionOffers?.length) {
-            return Promise.reject(
-              'subscriptionOffers are required for Google Play Subscriptions',
-            );
-          }
-          return RNIapAndroidModule.buyItemByType(
-            ANDROID_ITEM_TYPE_SUBSCRIPTION,
-            subscriptionOffers?.map((so) => so.sku),
-            purchaseTokenAndroid,
-            prorationModeAndroid,
-            obfuscatedAccountIdAndroid,
-            obfuscatedProfileIdAndroid,
-            subscriptionOffers?.map((so) => so.offerToken),
-            isOfferPersonalized ?? false,
-          );      },
-    }) || (() => Promise.resolve(null))
-  )();
+}: RequestSubscription): Promise<SubscriptionPurchase | null | void> => {
+  if (!subscriptionOffers?.length) {
+    return Promise.reject(
+      'subscriptionOffers are required for Google Play Subscriptions',
+    );
+  }
+  return RNIapAndroidModule.buyItemByType(
+    ANDROID_ITEM_TYPE_SUBSCRIPTION,
+    subscriptionOffers?.map((so) => so.sku),
+    purchaseTokenAndroid,
+    prorationModeAndroid,
+    obfuscatedAccountIdAndroid,
+    obfuscatedProfileIdAndroid,
+    subscriptionOffers?.map((so) => so.offerToken),
+    isOfferPersonalized ?? false,
+  );
+};
 
 /**
  * Finish Transaction (both platforms)
@@ -588,37 +543,27 @@ export const finishTransaction = ({
   isConsumable?: boolean;
   developerPayloadAndroid?: string;
 }): Promise<PurchaseResult | boolean> => {
-  return (
-    Platform.select({
-      ios: async () => {
-      },
-      android: async () => {
-        if (purchase?.purchaseToken) {
-          if (isConsumable) {
-            return getAndroidModule().consumeProduct(
-              purchase.purchaseToken,
-              developerPayloadAndroid,
-            );
-          } else if (
-            !purchase.isAcknowledgedAndroid &&
-              purchase.purchaseStateAndroid === PurchaseStateAndroid.PURCHASED
-          ) {
-            return getAndroidModule().acknowledgePurchase(
-              purchase.purchaseToken,
-              developerPayloadAndroid,
-            );
-          } else {
-            return Promise.reject(
-              new Error('purchase is not suitable to be purchased'),
-            );
-          }
-        }
-        return Promise.reject(
-          new Error('purchase is not suitable to be purchased'),
-        );
-      },
-    }) || (() => Promise.reject(new Error('Unsupported Platform')))
-  )();
+  if (purchase?.purchaseToken) {
+    if (isConsumable) {
+      return getAndroidModule().consumeProduct(
+        purchase.purchaseToken,
+        developerPayloadAndroid,
+      );
+    } else if (
+      !purchase.isAcknowledgedAndroid &&
+      purchase.purchaseStateAndroid === PurchaseStateAndroid.PURCHASED
+    ) {
+      return getAndroidModule().acknowledgePurchase(
+        purchase.purchaseToken,
+        developerPayloadAndroid,
+      );
+    } else {
+      return Promise.reject(
+        new Error('purchase is not suitable to be purchased'),
+      );
+    }
+  }
+  return Promise.reject(new Error('purchase is not suitable to be purchased'));
 };
 
 /**

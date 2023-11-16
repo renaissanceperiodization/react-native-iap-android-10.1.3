@@ -1,6 +1,4 @@
-import type {
-  AndroidModuleProps,
-} from '../modules';
+import type {AndroidModuleProps} from '../modules';
 
 export type Sku = string;
 
@@ -18,8 +16,6 @@ export enum PurchaseStateAndroid {
   PURCHASED = 1,
   PENDING = 2,
 }
-
-export const PROMOTED_PRODUCT = 'iap-promoted-product';
 
 export enum InstallSourceAndroid {
   NOT_SET = 0,
@@ -129,7 +125,6 @@ export interface SubscriptionAndroid extends ProductCommon {
     offerTags: string[];
   }[];
 }
-
 
 export type Subscription = SubscriptionAndroid;
 export interface RequestPurchaseBaseAndroid {
