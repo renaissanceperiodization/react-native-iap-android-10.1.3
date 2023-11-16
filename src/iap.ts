@@ -20,7 +20,7 @@ import {
 } from './types';
 import {InstallSourceAndroid, PurchaseStateAndroid} from './types';
 
-const {RNIapModule} = NativeModules;
+const {RNIapAndroidModule} = NativeModules;
 const ANDROID_ITEM_TYPE_SUBSCRIPTION = ProductType.subs;
 const ANDROID_ITEM_TYPE_IAP = ProductType.inapp;
 
@@ -28,31 +28,31 @@ export const getInstallSourceAndroid = (): InstallSourceAndroid => {
   return InstallSourceAndroid.GOOGLE_PLAY;
 };
 
-let androidNativeModule = RNIapModule;
+let androidNativeModule = RNIapAndroidModule;
 
 export const setAndroidNativeModule = (
-  nativeModule: typeof RNIapModule,
+  nativeModule: typeof RNIapAndroidModule,
 ): void => {
   androidNativeModule = nativeModule;
 };
 
 const checkNativeAndroidAvailable = (): void => {
-  if (!RNIapModule) {
+  if (!RNIapAndroidModule) {
     throw new Error('IAP_NOT_AVAILABLE');
   }
 };
 
 export const getAndroidModule = ():
-  typeof RNIapModule => {
+  typeof RNIapAndroidModule => {
   checkNativeAndroidAvailable();
 
   return androidNativeModule
     ? androidNativeModule
-    : RNIapModule;
+    : RNIapAndroidModule;
 };
 
 export const getNativeModule = ():
-  typeof RNIapModule => {
+  typeof RNIapAndroidModule => {
   return getAndroidModule();
 };
 
@@ -231,11 +231,11 @@ export const getPurchaseHistory = (): Promise<
       ios: async () => {
       },
       android: async () => {
-        const products = await RNIapModule.getPurchaseHistoryByType(
+        const products = await RNIapAndroidModule.getPurchaseHistoryByType(
           ANDROID_ITEM_TYPE_IAP,
         );
 
-        const subscriptions = await RNIapModule.getPurchaseHistoryByType(
+        const subscriptions = await RNIapAndroidModule.getPurchaseHistoryByType(
           ANDROID_ITEM_TYPE_SUBSCRIPTION,
         );
 
@@ -330,11 +330,11 @@ export const getAvailablePurchases = (): Promise<
       ios: async () => {
       },
       android: async () => {
-        const products = await RNIapModule.getAvailableItemsByType(
+        const products = await RNIapAndroidModule.getAvailableItemsByType(
           ANDROID_ITEM_TYPE_IAP,
         );
 
-        const subscriptions = await RNIapModule.getAvailableItemsByType(
+        const subscriptions = await RNIapAndroidModule.getAvailableItemsByType(
           ANDROID_ITEM_TYPE_SUBSCRIPTION,
         );
 
@@ -542,7 +542,7 @@ export const requestSubscription = ({
               'subscriptionOffers are required for Google Play Subscriptions',
             );
           }
-          return RNIapModule.buyItemByType(
+          return RNIapAndroidModule.buyItemByType(
             ANDROID_ITEM_TYPE_SUBSCRIPTION,
             subscriptionOffers?.map((so) => so.sku),
             purchaseTokenAndroid,
@@ -649,7 +649,7 @@ export const deepLinkToSubscriptionsAndroid = async ({
   checkNativeAndroidAvailable();
 
   return Linking.openURL(
-    `https://play.google.com/store/account/subscriptions?package=${await RNIapModule.getPackageName()}&sku=${sku}`,
+    `https://play.google.com/store/account/subscriptions?package=${await RNIapAndroidModule.getPackageName()}&sku=${sku}`,
   );
 };
 

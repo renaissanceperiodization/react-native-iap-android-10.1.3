@@ -43,7 +43,6 @@
     "lib",
     "android",
     "ios",
-    "RNIap.podspec",
     "!android/.gradle",
     "!android/.idea",
     "!android/build",

@@ -1,4 +1,4 @@
-package com.dooboolab.RNIap
+package com.dooboolab.RNIapAndroid
 
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -31,7 +31,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class RNIapModuleTest {
+class RNIapAndroidModuleTest {
 
     @MockK
     lateinit var context: ReactApplicationContext
@@ -45,14 +45,14 @@ class RNIapModuleTest {
     @MockK
     lateinit var availability: GoogleApiAvailability
 
-    private lateinit var module: RNIapModule
+    private lateinit var module: RNIapAndroidModule
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
         every { builder.setListener(any()) } returns builder
         every { builder.build() } returns billingClient
-        module = RNIapModule(context, builder, availability)
+        module = RNIapAndroidModule(context, builder, availability)
     }
 
     @Test

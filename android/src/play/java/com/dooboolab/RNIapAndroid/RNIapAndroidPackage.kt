@@ -1,4 +1,4 @@
-package com.dooboolab.RNIap
+package com.dooboolab.RNIapAndroid
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
@@ -6,7 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 import java.util.ArrayList
 
-class RNIapPackage : ReactPackage {
+class RNIapAndroidPackage : ReactPackage {
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
         return emptyList()
@@ -14,7 +14,7 @@ class RNIapPackage : ReactPackage {
 
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
         val modules: MutableList<NativeModule> = ArrayList()
-        modules.add(RNIapModule(reactContext))
+        modules.add(RNIapAndroidModule(reactContext))
         return modules
     }
 }

@@ -62,4 +62,4 @@ export interface AndroidModuleProps extends NativeModuleProps {
   getPackageName: GetPackageName;
 }
 
-export const AndroidModule = NativeModules.RNIapModule as AndroidModuleProps;
+export const AndroidModule = NativeModules.RNIapAndroidModule as AndroidModuleProps;

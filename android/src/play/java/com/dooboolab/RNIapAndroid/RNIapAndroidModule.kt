@@ -1,4 +1,4 @@
-package com.dooboolab.RNIap
+package com.dooboolab.RNIapAndroid
 
 import android.util.Log
 import com.android.billingclient.api.AcknowledgePurchaseParams
@@ -35,8 +35,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import java.util.ArrayList
-@ReactModule(name = RNIapModule.TAG)
-class RNIapModule(
+@ReactModule(name = RNIapAndroidModule.TAG)
+class RNIapAndroidModule(
     private val reactContext: ReactApplicationContext,
     private val builder: BillingClient.Builder = BillingClient.newBuilder(reactContext).enablePendingPurchases(),
     private val googleApiAvailability: GoogleApiAvailability = GoogleApiAvailability.getInstance()
@@ -698,7 +698,7 @@ class RNIapModule(
 
     companion object {
         private const val PROMISE_BUY_ITEM = "PROMISE_BUY_ITEM"
-        const val TAG = "RNIapModule"
+        const val TAG = "RNIapAndroidModule"
     }
 
     init {

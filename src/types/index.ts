@@ -163,6 +163,6 @@ export type RequestSubscription = RequestSubscriptionAndroid;
 
 declare module 'react-native' {
   interface NativeModulesStatic {
-    RNIapModule: AndroidModuleProps;
+    RNIapAndroidModule: AndroidModuleProps;
   }
 }
