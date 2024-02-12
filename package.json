@@ -1,6 +1,6 @@
 {
   "name": "@renper/react-native-iap-android-10",
-  "version": "10.1.3",
+  "version": "10.1.7",
   "description": "React Native In App Purchase Module.",
   "repository": {
     "type": "git",
@@ -39,12 +39,10 @@
     "src",
     "lib",
     "android",
-    "ios",
     "!android/.gradle",
     "!android/.idea",
     "!android/build",
     "!android/src/testPlay",
-    "!ios/build",
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__"
